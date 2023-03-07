@@ -1,7 +1,9 @@
 import { memo } from 'react'
 import { Box } from '@mui/material'
+import { useRouter } from 'next/router'
 
 const Logo = () => {
+  const router = useRouter();
   return (
     <Box
       component="i"
@@ -15,6 +17,7 @@ const Logo = () => {
         width: 106,
         height: 72,
       }}
+      onClick = {() => { router.replace('/contact') }}
     />
   )
 }
