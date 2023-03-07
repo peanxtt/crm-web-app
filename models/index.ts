@@ -1,11 +1,21 @@
 import { z } from "zod"
 
+export const characterPreviewSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  status: z.string(),
+  species: z.string(),
+  gender: z.string(),
+})
+export const charactersPreviewSchema = characterPreviewSchema.array();
+export type charactersPreviewType = z.infer<typeof characterPreviewSchema>;
+
 export const characterSchema = z.object({
   id: z.number(),
   name: z.string(),
   status: z.string(),
   species: z.string(),
-  type: z.string(),
+  type: z.string().optional(),
   gender: z.string(),
   origin: z.object({
     name: z.string(),
@@ -19,7 +29,7 @@ export const characterSchema = z.object({
   episode: z.array(z.string().url()),
   url: z.string().url(),
   created: z.string()
-})
+});
 export const charactersSchema = characterSchema.array();
 export type characterType = z.infer<typeof characterSchema>
 
@@ -31,7 +41,7 @@ export const locationSchema = z.object({
   residents: z.array(z.string().url()),
   url: z.string().url(),
   created: z.string()
-})
+});
 export type locationType = z.infer<typeof locationSchema>
 
 export const episodeSchema = z.object({
@@ -42,4 +52,4 @@ export const episodeSchema = z.object({
   characters: z.array(z.string().url()),
   url: z.string().url(),
   created: z.string()
-})
+});
