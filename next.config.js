@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    API_URL: "https://rickandmortyapi.com/api/"
+    API_URL: "https://rickandmortyapi.com/api"
   }
 }
 
