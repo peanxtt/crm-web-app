@@ -69,6 +69,8 @@ const Contact: NextPage = () => {
           <TextField id="search-box" label="Search Contact" type="search" variant="outlined" color="success" />
           </Box>
           <Box style={{ height: 400, width: '100%' }}>
+
+            { /* //TODO: MOVE get characters api into sticky table for better pagination */ }
             <StickyTable datas={characters} router={router} />
           </Box>
         </Box>

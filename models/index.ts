@@ -31,7 +31,7 @@ export const characterSchema = z.object({
   created: z.string()
 });
 export const charactersSchema = characterSchema.array();
-export type characterType = z.infer<typeof characterSchema>
+export type characterType = z.infer<typeof characterSchema>;
 
 export const locationSchema = z.object({
   id: z.number(),
@@ -42,7 +42,7 @@ export const locationSchema = z.object({
   url: z.string().url(),
   created: z.string()
 });
-export type locationType = z.infer<typeof locationSchema>
+export type locationType = z.infer<typeof locationSchema>;
 
 export const episodeSchema = z.object({
   id: z.number(),
@@ -53,3 +53,6 @@ export const episodeSchema = z.object({
   url: z.string().url(),
   created: z.string()
 });
+export type episodeType = z.infer<typeof episodeSchema>;
+
+export const episodesSchema = episodeSchema.array();

@@ -7,7 +7,7 @@ import { Box, Button, Container, Divider, Typography} from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
-import type { characterType } from "../../../models";
+import type { characterType, episodeType } from "../../../models";
 
 import api from '../api'
 import Logo from "../../../components/Icons/Logo";
@@ -19,6 +19,7 @@ import Loading from "../../../components/Loading";
 const IndividualContact: NextPage = () => {
   const router = useRouter();
   const [charId, setCharId] = useState<string>("");
+  const [episodeArray, setEpisodeArray] = useState<number[]>([]);
 
   useEffect(() => {
     if (router.isReady) {
@@ -39,7 +40,16 @@ const IndividualContact: NextPage = () => {
     staleTime: Infinity,
   });
 
-  console.log(character);
+  useEffect(() => {
+    if(character) {
+      const numArr: number[] = []
+      character.episode.forEach((ep: string) => {
+        const num = parseInt(ep.replace('https://rickandmortyapi.com/api/episode/', ''));
+        numArr.push(num);
+      });
+      setEpisodeArray(numArr);
+    }
+  },[character]);
 
   useEffect(() => {
     if(characterError){
@@ -51,7 +61,7 @@ const IndividualContact: NextPage = () => {
     router.push('/contact');
   }
 
-  if(!character) return <Loading />
+  if(!character || episodeArray.length === 0) return <Loading />
   return (
     <>
       <Container maxWidth="md" sx={{ px: 0 }}>
@@ -97,7 +107,7 @@ const IndividualContact: NextPage = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Information information={character} />
 
-            <DataTable />
+            <DataTable episodeArray={episodeArray} />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: '175px' }}>
             <Button onClick={handleBack} aria-label="back" sx={{ color: '#808080', marginBottom: '40px' }}>
