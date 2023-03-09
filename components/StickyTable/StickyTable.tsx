@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -9,7 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
-import { z } from "zod"
 import type { charactersPreviewType } from '../../models';
 import { NextRouter } from 'next/router';
 

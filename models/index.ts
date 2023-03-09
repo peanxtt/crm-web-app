@@ -54,5 +54,4 @@ export const episodeSchema = z.object({
   created: z.string()
 });
 export type episodeType = z.infer<typeof episodeSchema>;
-
 export const episodesSchema = episodeSchema.array();

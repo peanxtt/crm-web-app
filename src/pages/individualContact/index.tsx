@@ -7,7 +7,7 @@ import { Box, Button, Container, Divider, Typography} from "@mui/material";
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
-import type { characterType, episodeType } from "../../../models";
+import type { characterType } from "../../../models";
 
 import api from '../api'
 import Logo from "../../../components/Icons/Logo";

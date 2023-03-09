@@ -35,23 +35,16 @@ const DataTable = ({ episodeArray }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
 
-  const {data: episodes, error: episodesError} = useQuery< episodeType[] | null >({
+  const {data: episodes, error: episodesError} = useQuery< episodeType[] | episodeType | null >({
     queryKey: ['episodes', episodeArray],
-    queryFn: async () => {
-      if(!episodeArray) return null;
-      const episodes = await api.getMultipleEpisode(episodeArray);
-      if(!episodes) return null;
-      return episodes;
-    },
-    refetchInterval: 30000,
-    staleTime: Infinity,
+    queryFn: async () => { return await api.getMultipleEpisode(episodeArray); }
   });
-
-  console.log(episodes);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
+
+  console.log(episodes);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
@@ -63,7 +56,7 @@ const DataTable = ({ episodeArray }: Props) => {
       <Sync size={25} /> &nbsp;&nbsp; <Typography>Loading Episodes Table</Typography>
     </Box>
   )
-  return (
+  if (Array.isArray(episodes)) return (
     <Box sx={{ mt: '50px', alignItems: 'center' }}>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: 440 }}>
@@ -105,6 +98,50 @@ const DataTable = ({ episodeArray }: Props) => {
           rowsPerPageOptions={[10, 20, 40]}
           component="div"
           count={episodes.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </Box>
+  )
+  return (
+    <Box sx={{ mt: '50px', alignItems: 'center' }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: 440 }}>
+          <Table stickyHeader aria-label="episode_table">
+            <TableHead sx={{ color: 'black' }}>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align='center'
+                    style={{ minWidth: column.minWidth }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow hover role="checkbox" tabIndex={-1} key={episodes.id}>
+                {columns.map((column) => {
+                  const value = episodes[column.id];
+                  return (
+                    <TableCell key={column.id} align={'center'}>
+                        {value}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 20, 40]}
+          component="div"
+          count={1}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
