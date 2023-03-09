@@ -37,7 +37,6 @@ export async function getAllCharacter(page: number) {
   });
   if(!res.ok) return null;
   const json = await res.json();
-  console.log(json);
   if(!charactersSchema.safeParse(json.results).success) throw 'invalid_characters_schema';
   const data = charactersPreviewSchema.parse(json.results);
   return data;

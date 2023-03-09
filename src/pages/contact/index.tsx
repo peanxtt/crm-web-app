@@ -51,8 +51,6 @@ const Contact: NextPage = () => {
     queryFn: async () => { return await api.getCharacters(); }
   });
 
-  console.log(characters);
-
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
