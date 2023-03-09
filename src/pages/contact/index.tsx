@@ -74,7 +74,7 @@ const Contact: NextPage = () => {
     if(charactersError) console.error('character error');
   }, [charactersError])
 
-  if(!characters || filteredList.length === 0) return <Loading />
+  if(!characters) return <Loading />
   return (
     <>
       <Container maxWidth="md" sx={{ px: 0 }}>
