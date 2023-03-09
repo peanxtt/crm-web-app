@@ -9,11 +9,11 @@ import {
 
 const API_URL = process.env.API_URL;
 
-export async function getCharacters() {
+export async function getAllCharacters() {
   const initial = await fetch(`${API_URL}/character`, {
     method: "GET",
   });
-  if(!initial.ok) return null;
+  if(!initial.ok) throw 'no_data';
   const res = await initial.json();
   const pages = res.info.pages;
   let result: charactersPreviewType[] = [];
@@ -31,7 +31,7 @@ export async function getCharacters() {
   return data;
 }
 
-export async function getAllCharacter(page: number) {
+export async function getCharacters(page: number) {
   const res = await fetch(`${API_URL}/character/?page=${page}`, {
     method: "GET",
   });
@@ -70,7 +70,6 @@ export async function getMultipleEpisode(epArray: number[]) {
   });
   if(!res.ok) return null;
   const json = await res.json();
-  console.log(json);
   if(Array.isArray(json)){
     return episodesSchema.parse(json);
   } else {
@@ -79,9 +78,9 @@ export async function getMultipleEpisode(epArray: number[]) {
 }
 
 export default {
-  getAllCharacter,
   getCharacter,
   getCharacters,
+  getAllCharacters,
   getCharacterByName,
   getMultipleEpisode
 }

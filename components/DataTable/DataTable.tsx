@@ -44,8 +44,6 @@ const DataTable = ({ episodeArray }: Props) => {
     setPage(newPage);
   };
 
-  console.log(episodes);
-
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
 import Paper from '@mui/material/Paper';
@@ -12,7 +12,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Box, TextField, Container, Typography } from "@mui/material";
-import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import type { charactersPreviewType } from "../../../models";
 
@@ -37,21 +37,20 @@ const columns: readonly Column[] = [
 const Contact: NextPage = () => {
   const router = useRouter();
   const [page, setPage] = useState(0);
-  const [keyword, setKeywords] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [search, setSearch] = useState("");
+  const [filteredList, setFilteredList] = useState<charactersPreviewType[]>([]);
 
-  const getCharacters = async (page?: number, keyword?: string) => {
-    if(page) return await api.getAllCharacter(page);
-    if(keyword) return await api.getCharacterByName(keyword);
-    return 0;
-  }
-
-  const {data: characters, error: charactersError } = useQuery< charactersPreviewType[] | null >({
+  const {data: characters, error: charactersError} = useQuery< charactersPreviewType[]>({
     queryKey: ['characters'],
-    queryFn: async () => { return await api.getCharacters(); }
+    queryFn: async () => {
+      const characters = await api.getAllCharacters();
+      setFilteredList(characters);
+      return characters;
+    },
   });
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
   };
 
@@ -60,13 +59,19 @@ const Contact: NextPage = () => {
     setPage(0);
   };
 
-  const handleSearch = (input: React.ChangeEvent<HTMLInputElement>) => {
-    setKeywords(input.target.value)
-  }
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const keyword = event.target.value;
+    setSearch(keyword);
+
+    const searchList: charactersPreviewType[] = characters!.filter((item) => {
+      return item.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
+    });
+    setFilteredList(searchList);
+  };
 
   useEffect(() => {
     if(charactersError){
-      console.log('character error');
+      console.error('character error');
     }
   }, [charactersError])
 
@@ -89,7 +94,6 @@ const Contact: NextPage = () => {
             <Logo />
         </Box>
         <Box sx={{ textAlign: "left", mt: "46px", mb: "30px" }}>
-          {/* <Typography>Contacts</Typography> */}
           <Box sx={{ mb: 3 }}>
           <TextField
             id="search-box"
@@ -97,6 +101,7 @@ const Contact: NextPage = () => {
             type="search"
             variant="outlined"
             color="success"
+            value={search}
             onChange={handleSearch}
           />
           </Box>
@@ -119,7 +124,7 @@ const Contact: NextPage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {characters
+                    {filteredList
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((character: charactersPreviewType) => {
                         return (
@@ -154,8 +159,6 @@ const Contact: NextPage = () => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </Paper>
-
-            {/* <StickyTable datas={characters} router={router} /> */}
           </Box>
         </Box>
       </Container>

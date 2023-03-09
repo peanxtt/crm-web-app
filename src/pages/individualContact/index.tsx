@@ -53,7 +53,7 @@ const IndividualContact: NextPage = () => {
 
   useEffect(() => {
     if(characterError){
-      console.log('character error');
+      console.error('character error');
     }
   }, [characterError])
 
@@ -84,6 +84,7 @@ const IndividualContact: NextPage = () => {
             display: "flex",
             justifyContent: "center",
             textAlign: "center",
+            alignItems: "center",
             mb: 6,
           }}
         >
@@ -99,14 +100,16 @@ const IndividualContact: NextPage = () => {
             alt="Character Selfie"
             src={character.image}
           />
+            <Box sx={{  ml: '40px' }}>
+              <Typography sx={{ fontSize: '40px' }}>{character.name}</Typography>
+            </Box>
         </Box>
-        <Divider>
-            <Typography sx={{ fontSize: "20px", color: "#000000" }}>Character Details</Typography>
-        </Divider>
+        <Divider />
+            {/* <Typography sx={{ fontSize: "20px", color: "#000000" }}>Character Details</Typography> */}
+        {/* </Divider> */}
         <Box sx={{ textAlign: "left", mt: "30px", mb: "30px" }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Information information={character} />
-
             <DataTable episodeArray={episodeArray} />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: '175px' }}>
