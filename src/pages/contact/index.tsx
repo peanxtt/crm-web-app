@@ -1,6 +1,6 @@
 import Head from "next/head";
 import type { NextPage } from "next";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import Paper from '@mui/material/Paper';
@@ -9,9 +9,11 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
+import Pagination from '@mui/material/Pagination';
 import TableRow from '@mui/material/TableRow';
-import { Box, TextField, Container, Typography } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Box, TextField, Container, PaginationItem } from "@mui/material";
 import { useQuery } from '@tanstack/react-query';
 
 import type { charactersPreviewType } from "../../../models";
@@ -54,10 +56,9 @@ const Contact: NextPage = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  const pageCount = Math.ceil(filteredList.length / rowsPerPage);
+
+  console.log(filteredList);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const keyword = event.target.value;
@@ -70,18 +71,19 @@ const Contact: NextPage = () => {
   };
 
   useEffect(() => {
-    if(charactersError){
-      console.error('character error');
-    }
+    if(charactersError) console.error('character error');
   }, [charactersError])
 
-  if(!characters) return <Loading />
+  if(!characters || filteredList.length === 0) return <Loading />
   return (
     <>
       <Container maxWidth="md" sx={{ px: 0 }}>
         <Head>
-          <title>Rick and Morty CRM - Contact Page</title>
-          <meta name="description" content="Rick and Morty CRM" />
+          <title>Contact List - SleekFlow</title>
+          <meta
+            name="description"
+            content="View our list of contacts with their related information."
+          />
         </Head>
         <Box
             sx={{
@@ -106,11 +108,10 @@ const Contact: NextPage = () => {
           />
           </Box>
           <Box style={{ height: 400, width: '100%' }}>
-
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
               <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
+                <Table stickyHeader>
+                  <TableHead sx={{ backgroundColor: '#009879', color: '#ffffff' }}>
                     <TableRow>
                       {columns.map((column) => (
                         <TableCell
@@ -149,15 +150,21 @@ const Contact: NextPage = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[20]}
-                component="div"
-                count={characters.length}
-                rowsPerPage={rowsPerPage}
+              <Box sx={{ display:'flex', justifyContent:'center', mb: 1 }}>
+              <Pagination
+                color="primary"
+                count={pageCount - 1}
+                onChange={handleChangePage}
                 page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                size="large"
+                renderItem={(item) => (
+                  <PaginationItem
+                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                    {...item}
+                  />
+                )}
               />
+              </Box>
             </Paper>
           </Box>
         </Box>

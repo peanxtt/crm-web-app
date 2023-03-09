@@ -13,11 +13,6 @@ const Information = ({ information }: Props) => {
       </Box>
       <Table sx={{ minWidth: "auto", border: 1, borderColor: '#CED4DA', alignItems: 'center' }}>
         <TableBody>
-          {/* <TableRow>
-            <TableCell colSpan={3}>
-              <Typography sx={{ fontSize: 20, textAlign: 'center' }}>{information.name}</Typography>
-            </TableCell>
-          </TableRow> */}
           <TableRow>
             <TableCell>
               <Typography sx={{ fontSize: 18, textAlign: 'center' }}>{information.gender}</Typography>

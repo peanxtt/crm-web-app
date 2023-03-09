@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import { Box, Button, Container, Divider, Typography} from "@mui/material";
-import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 import type { characterType } from "../../../models";
@@ -66,8 +66,8 @@ const IndividualContact: NextPage = () => {
     <>
       <Container maxWidth="md" sx={{ px: 0 }}>
         <Head>
-          <title>Character Detail</title>
-          <meta name="" content="Individual Character" />
+          <title>{character.name} - SleekFlow</title>
+          <meta name="description" content={`View information about ${character.name}`} />
         </Head>
         <Box
           sx={{
