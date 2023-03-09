@@ -7,7 +7,7 @@ const Home: NextPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    router.replace('/contact')
+    router.replace('/contacts')
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

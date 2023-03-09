@@ -3,169 +3,120 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import Pagination from '@mui/material/Pagination';
-import TableRow from '@mui/material/TableRow';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { Box, TextField, Container, PaginationItem } from "@mui/material";
+import { Box, Button, Container, Divider, Typography} from "@mui/material";
 import { useQuery } from '@tanstack/react-query';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
-import type { charactersPreviewType } from "../../../models";
+import type { characterType } from "../../../models";
 
 import api from '../api'
 import Logo from "../../../components/Icons/Logo";
+import DataTable from "../../../components/DataTable";
+import Information from "../../../components/Information";
 import Loading from "../../../components/Loading";
 
-interface Column {
-  id: 'name' | 'status' | 'species' | 'gender';
-  label: string;
-  minWidth?: number;
-  align?: 'center';
-}
 
-const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'status', label: 'Status', minWidth: 100 },
-  { id: 'species', label: 'Species', minWidth: 100 },
-  { id: 'gender', label: 'Gender', minWidth: 100 },
-];
-
-const Contact: NextPage = () => {
+const Contacts: NextPage = () => {
   const router = useRouter();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-  const [search, setSearch] = useState("");
-  const [filteredList, setFilteredList] = useState<charactersPreviewType[]>([]);
-
-  const {data: characters, error: charactersError} = useQuery< charactersPreviewType[]>({
-    queryKey: ['characters'],
-    queryFn: async () => {
-      const characters = await api.getAllCharacters();
-      setFilteredList(characters);
-      return characters;
-    },
-  });
-
-  const handleChangePage = (event: any, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const pageCount = Math.ceil(filteredList.length / rowsPerPage);
-
-  console.log(filteredList);
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const keyword = event.target.value;
-    setSearch(keyword);
-
-    const searchList: charactersPreviewType[] = characters!.filter((item) => {
-      return item.name.toLowerCase().indexOf(keyword.toLowerCase()) !== -1;
-    });
-    setFilteredList(searchList);
-  };
+  const [charId, setCharId] = useState<string>("");
+  const [episodeArray, setEpisodeArray] = useState<number[]>([]);
 
   useEffect(() => {
-    if(charactersError) console.error('character error');
-  }, [charactersError])
+    if (router.isReady) {
+      const { id } = router.query;
+      setCharId(`${id}`);
+    }
+  }, [router.isReady])
 
-  if(!characters) return <Loading />
+  const {data: character, error: characterError} = useQuery< characterType | null >({
+    queryKey: ['character', charId],
+    queryFn: async () => {
+      if(!charId) return null;
+      const character = await api.getCharacter(charId);
+      if(!character) return null;
+      return character;
+    },
+    refetchInterval: 10000,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if(character) {
+      const numArr: number[] = []
+      character.episode.forEach((ep: string) => {
+        const num = parseInt(ep.replace('https://rickandmortyapi.com/api/episode/', ''));
+        numArr.push(num);
+      });
+      setEpisodeArray(numArr);
+    }
+  },[character]);
+
+  useEffect(() => {
+    if(characterError){
+      console.error('character error');
+    }
+  }, [characterError])
+
+  const handleBack = () => {
+    router.push('/contacts');
+  }
+
+  if(!character || episodeArray.length === 0) return <Loading />
   return (
     <>
       <Container maxWidth="md" sx={{ px: 0 }}>
         <Head>
-          <title>Contact List - SleekFlow</title>
-          <meta
-            name="description"
-            content="View our list of contacts with their related information."
-          />
+          <title>{character.name} - SleekFlow</title>
+          <meta name="description" content={`View information about ${character.name}`} />
         </Head>
         <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              textAlign: "center",
-              mb: 6,
-            }}
-          >
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            mb: 6,
+          }}
+        >
             <Logo />
         </Box>
-        <Box sx={{ textAlign: "left", mt: "46px", mb: "30px" }}>
-          <Box sx={{ mb: 3 }}>
-          <TextField
-            id="search-box"
-            label="Search Contact"
-            type="search"
-            variant="outlined"
-            color="success"
-            value={search}
-            onChange={handleSearch}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            alignItems: "center",
+            mb: 6,
+          }}
+        >
+          <Box
+            component="img"
+            sx={{
+              border: 1,
+              borderColor: '#00994C',
+              borderRadius: '50%',
+              maxHeight: { xs: 300, md: 150 },
+              maxWidth: { xs: 300, md: 150 },
+            }}
+            alt="Character Selfie"
+            src={character.image}
           />
+            <Box sx={{  ml: '40px' }}>
+              <Typography sx={{ fontSize: '40px' }}>{character.name}</Typography>
+            </Box>
+        </Box>
+        <Divider />
+            {/* <Typography sx={{ fontSize: "20px", color: "#000000" }}>Character Details</Typography> */}
+        {/* </Divider> */}
+        <Box sx={{ textAlign: "left", mt: "30px", mb: "30px" }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Information information={character} />
+            <DataTable episodeArray={episodeArray} />
           </Box>
-          <Box style={{ height: 400, width: '100%' }}>
-            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-              <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader>
-                  <TableHead sx={{ backgroundColor: '#009879', color: '#ffffff' }}>
-                    <TableRow>
-                      {columns.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          style={{ minWidth: column.minWidth }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredList
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((character: charactersPreviewType) => {
-                        return (
-                          <TableRow
-                            hover
-                            role="checkbox"
-                            tabIndex={-1}
-                            key={character.id}
-                            onClick = {() => {router.push(`/individualContact?id=${character.id}`)}}
-                          >
-                            {columns.map((column) => {
-                              const value = character[column.id];
-                              return (
-                                <TableCell key={column.id} align={column.align}>
-                                  {value}
-                                </TableCell>
-                              );
-                            })}
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Box sx={{ display:'flex', justifyContent:'center', mb: 1 }}>
-              <Pagination
-                color="primary"
-                count={pageCount - 1}
-                onChange={handleChangePage}
-                page={page}
-                size="large"
-                renderItem={(item) => (
-                  <PaginationItem
-                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-                    {...item}
-                  />
-                )}
-              />
-              </Box>
-            </Paper>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pt: '175px' }}>
+            <Button onClick={handleBack} aria-label="back" sx={{ color: '#808080', marginBottom: '40px' }}>
+              <KeyboardBackspaceIcon sx={{ color: 'black' }} />
+              <Typography sx={{ color: 'black', fontSize: '20px', ml: '8px' }}>Go Back</Typography>
+            </Button>
           </Box>
         </Box>
       </Container>
@@ -173,4 +124,4 @@ const Contact: NextPage = () => {
   )
 }
 
-export default Contact
+export default Contacts;

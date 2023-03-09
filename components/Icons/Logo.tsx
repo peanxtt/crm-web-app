@@ -17,7 +17,7 @@ const Logo = () => {
         width: 106,
         height: 72,
       }}
-      onClick = {() => { router.replace('/contact') }}
+      onClick = {() => { router.replace('/contacts') }}
     />
   )
 }

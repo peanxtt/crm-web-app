@@ -10,8 +10,8 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   return (
       <QueryClientProvider client={queryClient}>
         <Head>
-          <title>Rick and Morty | CRM</title>
-          <meta name="description" content="Rick and Morty" />
+          <title>Contact List - SleekFlow</title>
+          <meta name="description" content="View our list of contacts with their related information." />
         </Head>
         <Hydrate state={pageProps.dehydratedState}>
             <Component {...pageProps} />
